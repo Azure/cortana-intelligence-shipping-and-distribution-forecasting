@@ -52,7 +52,7 @@ If you want to make more extensive customizations to the machine learning web-se
 
 The following chart describes the solution architecture. 
 
-![Solution Architecture](./media/architecture.png)
+![Solution Architecture](https://github.com/Azure/cortana-intelligence-shipping-and-distribution-forecasting/blob/master/Technical%20Deployment%20Guide/media/architecture.PNG)
 
 The solution uses five types of resources hosted and managed in Azure: 
 
@@ -95,7 +95,7 @@ The resources deployed in this solution are provisioned in the following order:
 
 Once the solution is deployed to the subscription, you can see the services deployed by clicking the resource group name on the final deployment screen in the CIS.
 
-![CIS resource group link](./media/ciqs_resources.png)
+![CIS resource group link](https://github.com/Azure/cortana-intelligence-shipping-and-distribution-forecasting/blob/master/Technical%20Deployment%20Guide/media/ciqs_resources.png)
 
 This will show all the resources under this resource group on [Azure management portal](https://portal.azure.com/). After successful deployment, the entire solution is automatically started on cloud. You can monitor the progress from the following resources.
 
@@ -133,7 +133,7 @@ The solution consumes four database tables: __HistoricalOrders__, __ForecastPara
 
 Figure below shows the data sources to the forecasting model and the respective SQL tables.
 
-![DBSourceFlow](./media/dbschema_sourcediagram.png)
+![DBSourceFlow](https://github.com/Azure/cortana-intelligence-shipping-and-distribution-forecasting/blob/master/Technical%20Deployment%20Guide/media/dbschema_sourcediagram.PNG)
 
 Here we provide more information about the tables used, their columns, valid values and constraints.
 
