@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Defined a module using an R Script -->
+<Module name="Distribution Demand Forecast">
+  <Owner>Microsoft Corporation</Owner>
+  <Description>Predict freight demand using heirarchical forecasting methods</Description>
+
+  <!-- Specify the base language, script file and R function to use for this module. -->
+  <Language name="R" sourceFile="forecast_aml.R" entryPoint="distribution_forecast_entry" />
+
+  <!-- Define module input and output ports -->
+  <!-- Note: The values of the id attributes in the Input and Arg elements must match the parameter names in the R Function CustomAddRows defined in CustomAddRows.R. -->
+  <Ports>
+    <Input id="dataset" name="Dataset" type="DataTable">
+      <Description>Historic shipment records</Description>
+    </Input>
+    <Input id="db_params" name="ForecastParameters" type="DataTable">
+      <Description>Parameters controlling the forecasting model</Description>
+    </Input>
+    <Output id="forecast_hist" name="ForecastHistory" type="DataTable">
+      <Description>Forecast attributes</Description>
+    </Output>
+    <Output id="forecast_stat" name="StatisticalForecast" type="DataTable">
+      <Description>Disaggregated forecasts</Description>
+    </Output>
+    <Output id="deviceOutput" name="View Port" type="Visualization">
+      <Description>View the R console graphics device output.</Description>
+    </Output>
+  </Ports>
+</Module>
