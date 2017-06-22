@@ -1,6 +1,6 @@
 # Shipping and Distribution Demand Forecasting
 
-This folder contains the automated deployment instructions for the deployable Shipping and Distribution Demand Forecasting solution in the Cortana Intelligence Gallery. To start a new solution deployment, visit the gallery page [here (TODO: add link when available)](http://link).
+This folder contains the automated deployment instructions for the deployable Shipping and Distribution Demand Forecasting solution in the Cortana Intelligence Gallery. To start a new solution deployment, visit the gallery page [here](https://gallery.cortanaintelligence.com/Solution/2108aa00e76f43489c9c20fdd7659527).
 
 ## Summary
 
