@@ -1,4 +1,5 @@
 library(dplyr)
+library(RODBC)
 
 #####################################################################
 # Make example demand data by customer, product, and destination
@@ -8,9 +9,10 @@ library(dplyr)
 # generating a time series which is in the form of:
 # demand = const + seasonal_variation + gaussian_noise
 #
-# The main function is exampleDataGen. It will return a data frame
-# with our defined historic demand schema. See function def for
-# input list
+# The central function is exampleDataGen. It will return a data frame
+# with our defined historic demand schema. 
+# It takes 
+# 
 #
 #####################################################################
 
@@ -19,7 +21,40 @@ customerList <- c("Contoso","Protoso")
 productCategories <- c("Plastics","Metals")
 destinationList <- c("China","United States","India")
 
-# Do some hacky outer products to generate the full data frame of product hierarchies
+# SQL Server credentials
+myServer <- "<server>.database.windows.net"
+myUser <- "<user>"
+myPassword <- "<passwd>"
+myDatabase <- "DemandDW"
+myDriver <- "SQL Server"
+myTable <- "FcastML.HistoricalOrders"
+
+saveToDb <- function(dat, sqlTable, dbServer, dbUsername, dbPassword, dbDatabase, dbDriver){
+  
+  # Build the connection string  
+  connectionString <- paste0(
+    "Driver=", dbDriver, 
+    ";Server=", dbServer, 
+    ";Database=", dbDatabase, 
+    ";Uid=", dbUsername, 
+    ";Pwd=", dbPassword)
+  
+  # Open your RODBC connection
+  myconn <- odbcDriverConnect(connectionString)
+  
+  sqlDrop(myconn, sqlTable)
+  
+  varTypes <- list("nvarchar(100)", "nvarchar(100)", "nvarchar(100)", "date", "float")
+  names(varTypes) <- names(dat)
+  
+  sqlSave(myconn, dat, tablename=sqlTable, rownames = F, varTypes = varTypes)
+  
+  # Close the connection
+  odbcCloseAll()
+  
+}
+
+# Do some outer products to generate the full data frame of product hierarchies
 getCombos <- function(customerList, productCategories, destinationList) {
   
   ncust <- length(customerList)
@@ -39,6 +74,7 @@ getCombos <- function(customerList, productCategories, destinationList) {
   return(combo.df)
 }
 
+# Generate a single demand time series
 generateDemand <- function(startDate = as.Date("2015-01-01"),
                            endDate = as.Date("2017-05-01"),
                            baselineDemand = 100,
@@ -57,11 +93,17 @@ generateDemand <- function(startDate = as.Date("2015-01-01"),
   return(data.frame(Date=months, Quantity=demand))
 }
 
+# Generate full data frame of demand  - one series for each 
+# leaf in the hierarchy
+# Demand parameters are given by generator functions
 exampleDataGen <- function(customerList, productCategories, destinationList, 
                            startDate = as.Date("2015-01-01"),
                            endDate = as.Date("2017-05-01"),
-                           baselineDemand = 100,
-                           seasonalAmp=10, seasonalPhase=-0.8, noiseSigma=5)
+                           baselineDemandGen = function() rnorm(1, mean=100, sd=50),
+                           seasonalAmpGen = function() rnorm(1, mean=15, sd=15),
+                           seasonalPhaseGen = function() rnorm(1, mean=-0.8, sd=3),
+                           noiseSigmaGen = function() runif(1, min=5, max=25))                                      
+                           
 {
   # Get all the combinations of levels and group them
   combo.df <- getCombos(customerList, productCategories, destinationList) %>%
@@ -70,10 +112,18 @@ exampleDataGen <- function(customerList, productCategories, destinationList,
   # Generate time series for each combo
   historicDemand.df <- combo.df %>% do(generateDemand(startDate = startDate,
                                                 endDate = endDate,
-                                                baselineDemand = rnorm(1, mean=baselineDemand, sd=baselineDemand/2),
-                                                seasonalAmp = rnorm(1, mean=seasonalAmp, sd=seasonalAmp),
-                                                seasonalPhase = rnorm(1, mean=seasonalPhase, sd=abs(seasonalPhase)),
-                                                noiseSigma = runif(1, min=noiseSigma/2, max=2*noiseSigma)))
+                                                baselineDemand = baselineDemandGen(),
+                                                seasonalAmp = seasonalAmpGen(),
+                                                seasonalPhase = seasonalPhaseGen(),
+                                                noiseSigma = noiseSigmaGen()))
   
   return(historicDemand.df)
 }
+
+# Generate default data and save to database
+
+print("Generating demand data...")
+exampleDat <- exampleDataGen(customerList, productCategories, destinationList)
+
+print("Writing to database...")
+saveToDb(data.frame(exampleDat), myTable, myServer, myUser, myPassword, myDatabase, myDriver)
