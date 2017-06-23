@@ -8,7 +8,8 @@
   4. [Provisioned Resources](#provisioned-resources)
   5. [Data Schema](#data-schema)
   6. [Simulated Data](#simulated-data)
-  7. [Solution Customization](#solution-customization)
+  7. [Loading your own data](#loading-your-own-data)
+  8. [Solution Customization](#solution-customization)
 
 ## Introduction  
 The Shipping and Distribution Demand Forecasting Solution uses historical demand time series to forecast demand in future periods. For instance, a shipping or delivery company wants to predict the quantities of the different products its customers will commit at future times.  Similarly a vendor or insurer wants to know the number of products that will be returned due to  failure over the course of a year. A company can use these forecasts as input to an allocation tool that optimizes delivery vehicles or routes, or to plan capacity in the longer term.
@@ -256,7 +257,21 @@ cd <psscript_directory_path>
 
 where *psscript_directory_path* is the location of the PowerShell script, *subscription_id* is Azure subscription ID, *resource_group_name* is Resource Group name of the solution, and *data_factory_name* is the name of the Azure Data Factory deployed by the solution.
 
- ## Solution Customization
+## Loading Your Own Data
+
+If you would like to generate forecasts on your own hierarchical demand data, you can do that by loading your data into the Azure SQL database created by the solution. There are many ways to do that, but here we highlight two ways to loading data into the Azure DB, one using bcp command and the other way using Azure Data Factory. 
+
+* [Load data from CSV into Azure SQL Database (flat files)](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-load-from-csv-with-bcp)
+
+    You can use the bcp (bulk copy) command-line utility to import data from a CSV file into Azure SQL Database. [This document](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-load-from-csv-with-bcp) describes how to that from creating the destination table (which is already created in the solution), to creating a source data file, to loading the data using the bcp command-line utility.
+
+* [Copy data from Blob Storage to SQL Database using Azure Data Factory](https://docs.microsoft.com/en-us/azure/data-factory/data-factory-copy-data-from-azure-blob-storage-to-sql-database)
+
+    You can also create a data factory with a pipeline to copy data from Blob storage to SQL database. The Copy Activity performs the data movement in Azure Data Factory. It is powered by a globally available service that can copy data between various data stores in a secure, reliable, and scalable way. [This document](https://docs.microsoft.com/en-us/azure/data-factory/data-factory-copy-data-from-azure-blob-storage-to-sql-database) walks through a simple example of copying some data from Azure blob to Azure SQL table.
+
+Note that after the new data is loaded into the SQL database, you will need to reset the Azure Data Factory to re-run the demand forecast pipelines on the new data. You can do so by following the steps outlined in the [previous section](#resetting-azure-data-factory-pipelines).
+
+## Solution Customization
 
 If you would like to customize the solution to your data and business needs, beyond what can be done through R code customization, you can customize the ARM template files used in the automated deployment. 
 
