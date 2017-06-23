@@ -279,10 +279,9 @@ If you would like to customize the solution to your data and business needs, bey
 * **FcastMlDeploy.json**: Deploys ML Webservice
 * **DataFactoryDeploy.json**: Sets up Data Factory pipelines
 
-We described these templates in some detail in the [Technical Details and Workflow](#technical-details-and-workflow) section above. However, for demonstration, let's walk through a simple customization scenario, where we will modify the pipeline to generate forecasts on weekly basis, rather than monthly. 
+We described these templates in some detail in the [Technical Details and Workflow](#technical-details-and-workflow) section above. 
 
-The frequency of runs is specified in the *DataFactoryDeploy.json*. There are four main sections in an ARM template: parameters, variables, resource, and outputs (as shown below). Parameters are values that are provided when deployment is executed to customize resource deployment.
-variables are values that are used as JSON fragments in the template to simplify template language expressions. Resources section is the core section of the ARM template and it lists all resource types that are deployed or updated in a resource group. Outputs are values that are returned after deployment.
+In general, there are four main sections in an ARM template: parameters, variables, resource, and outputs (as shown below). Parameters are values that are provided when deployment is executed to customize resource deployment. Variables are values that are used as JSON fragments in the template to simplify template language expressions. Resources section is the core section of the ARM template and it lists all resource types that are deployed or updated in a resource group. Outputs are values that are returned after deployment.
 
 ```
 {
@@ -295,17 +294,34 @@ variables are values that are used as JSON fragments in the template to simplify
 }
 ```
 
-Frequency at which the Azure Data Factory schedules the pipeline is specified under the *variables* section. To change this frequency, navigate to the *pipelineFrequency* variable under the *variables*, and change the value from Month to Week.
+For example, let's say we'd like to change our Azure Machine Learning Commitment Plan, say upgrade it to plan Standard S2. We can do that by modifying the *FcastMlDeploy.json* ARM template. The Machine Learning plan is defined under *variables*, then used under *resources* to specify the plan to be provisioned. To upgrade from Standard S1 to Standard S2 plan, we would need to change the variable "planSkuName" to S2, as shown below.
+
 
 ```
 "variables": {
   "namePrefix": "[resourceGroup().name]",
   "uniqueNamePrefix": "[toLower(concat(variables('namePrefix'), uniqueString(subscription().subscriptionId)))]",
-  "dataFactoryName": "[concat(variables('uniqueNamePrefix'),'df')]",
-  "pipelineFrequency": "Week",
-  "pipelineStartDate": "2017-03-01T00:00:00Z",
-  ...
+  "location": "[resourceGroup().location]",
+  "planName": "[concat(variables('uniqueNamePrefix'),'plan')]",
+  "planSkuName": "S2",
+  "planSkuTier": "Standard",
+  "mlWebServiceName": "[concat(variables('uniqueNamePrefix'),'fcastmlsvc')]",
+  "mlWebServiceTitle": "ML Forecast Service"
 },
+"resources": [
+  {
+    "apiVersion": "2016-05-01-preview",
+    "name": "[variables('planName')]",
+    "type": "Microsoft.MachineLearning/CommitmentPlans",
+    "location": "[variables('location')]",
+    "sku": {
+      "name": "[variables('planSkuName')]",
+      "tier": "[variables('planSkuTier')]",
+      "capacity": "1"
+    },
+    "properties": {
+   }
+  },
 ```
 
 For more information about ARM templates, please refer to the Azure Resource Manager [documentation](https://docs.microsoft.com/en-us/azure/azure-resource-manager/) page. 
