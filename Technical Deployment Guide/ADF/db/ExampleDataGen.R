@@ -11,8 +11,9 @@ library(RODBC)
 #
 # The central function is exampleDataGen. It will return a data frame
 # with our defined historic demand schema. 
-# It takes 
 # 
+# Fill in the SQL Server credentials and source this script to write the 
+# demand data to the HistoricalOrders table
 #
 #####################################################################
 
@@ -28,31 +29,6 @@ myPassword <- "<passwd>"
 myDatabase <- "DemandDW"
 myDriver <- "SQL Server"
 myTable <- "FcastML.HistoricalOrders"
-
-saveToDb <- function(dat, sqlTable, dbServer, dbUsername, dbPassword, dbDatabase, dbDriver){
-  
-  # Build the connection string  
-  connectionString <- paste0(
-    "Driver=", dbDriver, 
-    ";Server=", dbServer, 
-    ";Database=", dbDatabase, 
-    ";Uid=", dbUsername, 
-    ";Pwd=", dbPassword)
-  
-  # Open your RODBC connection
-  myconn <- odbcDriverConnect(connectionString)
-  
-  sqlDrop(myconn, sqlTable)
-  
-  varTypes <- list("nvarchar(100)", "nvarchar(100)", "nvarchar(100)", "date", "float")
-  names(varTypes) <- names(dat)
-  
-  sqlSave(myconn, dat, tablename=sqlTable, rownames = F, varTypes = varTypes)
-  
-  # Close the connection
-  odbcCloseAll()
-  
-}
 
 # Do some outer products to generate the full data frame of product hierarchies
 getCombos <- function(customerList, productCategories, destinationList) {
@@ -118,6 +94,36 @@ exampleDataGen <- function(customerList, productCategories, destinationList,
                                                 noiseSigma = noiseSigmaGen()))
   
   return(historicDemand.df)
+}
+
+# Save the data.frame dat to sqlTable in the specified SQL DB
+saveToDb <- function(dat, sqlTable, dbServer, dbUsername, dbPassword, dbDatabase, dbDriver){
+  
+  # Build the connection string  
+  connectionString <- paste0(
+    "Driver=", dbDriver, 
+    ";Server=", dbServer, 
+    ";Database=", dbDatabase, 
+    ";Uid=", dbUsername, 
+    ";Pwd=", dbPassword)
+  
+  # Open your RODBC connection
+  myconn <- odbcDriverConnect(connectionString)
+  
+  if(myconn==-1) {
+    stop(paste("Error connecting to SQL Server. Connection string:",connectionString))
+  }
+  
+  sqlDrop(myconn, sqlTable)
+  
+  varTypes <- list("nvarchar(100)", "nvarchar(100)", "nvarchar(100)", "date", "float")
+  names(varTypes) <- names(dat)
+  
+  sqlSave(myconn, dat, tablename=sqlTable, rownames = F, varTypes = varTypes)
+  
+  # Close the connection
+  odbcCloseAll()
+  
 }
 
 # Generate default data and save to database
