@@ -8,6 +8,8 @@ The script sets the requested slice to 'Waiting' status for a selection of the d
 The script must be provided an active Azure subscription ID, a Resource Group name, 
 and the name of the Data Factory. 
 
+Requires latest Azure Powershell release: https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids 
+
 #>
 
 param(
