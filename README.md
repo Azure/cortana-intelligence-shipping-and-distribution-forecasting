@@ -4,9 +4,19 @@ This folder contains the automated deployment instructions for the deployable Sh
 
 ## Summary
 
-Time series data can often be disaggregated by attributes of interest to form groups of time series or a hierarchy. For example, one might be interested in forecasting demand of all products in total, by location, by product category, by customer, etc. Forecasting grouped time series data is challenging because the generated forecasts need to satisfy the aggregate requirement, that is, lower-level forecasts need to sum up to the higher-level forecasts. There are many approaches that solve this problem, differing in the way they aggregate individual time series forecasts across the groups or the hierarchy. This solution uses a middle-out approach to forecasting grouped time series ([Hyndman et al.](http://otexts.org/fpp/9/4)).
+The Demand Forecasting for Shipping and Distribution Solution uses historical demand time series data to forecast demand in future periods. For instance, a shipping or delivery company wants to predict the quantities of the different products its customers will commit at future times. Similarly a vendor or insurer wants to know the number of products that will be returned due to failure over the course of a year. A company can use these forecasts as input to an allocation tool that optimizes delivery vehicles or routes, or to plan capacity in the longer term.
 
-In this preconfigured solution we deploy a forecasting model that reads hierarchical or grouped data, and computes forecasts disaggregated by all input variables. In this text, we will refer to both hierarchial and grouped time series as hierarchical time series, for simplicity.
+Characteristic of all of these forecasting cases are: 
+    
+- There are numerous kinds of items with differing volumes, that roll up under one or more category levels.
+- There is a history available for the quantity of the item at each time in the past.
+- The volumes of the items differ widely, with possibly a substantial number that have zero volume at times. 
+- The history of items shows both trend and seasonality, possibly at multiple time scales. 
+- The quantities commited or returned are not strongly price sensitive. In other words, the delivery company cannot strongly influence quantities by short-term changes in prices, although there may be other determinants that affect volume, such as weather. 
+      
+Under these conditions we can take advantage of the hierarchy formed among the time series of the different items. By enforcing consistency so that the quantities lower in the hierarchy (e.g. individual product quantities) sum to the quantities above (customer product totals) we improve the accuracy of the overall forecast. The same applies if individual items are grouped into categories, even possibly categories that overlap. For example, one might be interested in forecasting demand of all products in total, by location, by product category, by customer, etc. 
+
+This solution computes forecasts at all aggregation levels in the hierarchy for each time period specified. For simplicity, we will refer to both hierarchial and grouped time series as "hierarchical time series."
 
 ## Description
 

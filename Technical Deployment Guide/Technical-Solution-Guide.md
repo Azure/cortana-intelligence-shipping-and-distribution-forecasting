@@ -36,7 +36,9 @@ In addition if you are a System Integrator and ISV, you will be able to customiz
 
 ### The fundamentals of hierarchical forecasting 
 
-As mentioned, the novelty of this solution is to generate accurate forecasts that satisfy aggregation requirements; that is, lower-level forecasts need to sum up to the higher-level forecasts, and the individual forecasts are more accurate than just independantly generated ones. The challenge has spawned many approaches to solving this problem, differing in the way they aggregate individual time series forecasts across the groups or the hierarchy. This solution exposes several approaches to forecasting grouped time series as a parameter, namely bottom-up, top-down and a combination approach ([Hyndman et al.](http://otexts.org/fpp/9/4)).
+Time series data can often be disaggregated by attributes of interest to form groups of time series or a hierarchy. For example, one might be interested in forecasting demand of all products in total, by location, by product category, by customer, etc. Forecasting grouped time series data is challenging because the generated forecasts need to satisfy the aggregate requirement, that is, lower-level forecasts need to sum up to the higher-level forecasts. There are many approaches that solve this problem, differing in the way they aggregate individual time series forecasts across the groups or the hierarchy. 
+
+The novelty of this solution is to generate accurate forecasts that satisfy aggregation requirements; that is, lower-level forecasts need to sum up to the higher-level forecasts, and the individual forecasts are more accurate than just independantly generated ones. The challenge has spawned many approaches to solving this problem, differing in the way they aggregate individual time series forecasts across the groups or the hierarchy. This solution exposes several approaches to forecasting grouped time series as a parameter, namely bottom-up, top-down and a combination approach ([Hyndman et al.](http://otexts.org/fpp/9/4)).
 
 ### Customizations and limitations
 
