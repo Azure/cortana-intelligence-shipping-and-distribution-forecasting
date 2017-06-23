@@ -2,41 +2,47 @@
 
 This folder contains the automated deployment instructions for the deployable Shipping and Distribution Demand Forecasting solution in the Cortana Intelligence Gallery. To start a new solution deployment, visit the gallery page [here](https://gallery.cortanaintelligence.com/Solution/2108aa00e76f43489c9c20fdd7659527).
 
+#### Estimated Provisioning Time: 15 Minutes
+
 ## Summary
 
-The Demand Forecasting for Shipping and Distribution Solution uses historical demand time series data to forecast demand in future periods. For instance, a shipping or delivery company wants to predict the quantities of the different products its customers will commit at future times. Similarly a vendor or insurer wants to know the number of products that will be returned due to failure over the course of a year. A company can use these forecasts as input to an allocation tool that optimizes delivery vehicles or routes, or to plan capacity in the longer term.
+This is an an Azure Solution to reduce the uncertainty in forecasted shipments for organizations that need to plan based on future quantities. This page explains the what the Solution does, and how to install a copy that you can run and modify in your [Azure](https://azure.microsoft.com/en-us/free/?v=17.16&WT.srch=1&WT.mc_id=AID559320__SEM_R2ynpxTK&) subscription. 
 
-Characteristic of all of these forecasting cases are: 
-    
+Azure Solutions in the Cortana Intelligence Gallery are composed of advanced analytics tools for data ingestion, data storage, scheduling and advanced analytics components - all of the essential elements for running a demand forecasting solution that can be integrated with your current production systems. This Solution combines several Azure services.  SQL Server is used for storing forecasts and historical distribution data, Azure Machine Learning (AML) webservice for hosting the R forecasting code, Azure Data Factory to orchestrate the entire workflow, and Power BI to visualize it.
+
+Use the '*Deploy*' button on this page to deploy an instance of the Solution for the Azure subscription you specify. This will bring you through the steps in your subscription needed to create and launch the resources that make up this solution so that you can run it. The Solution includes multiple Azure services (described below) along with Azure functions that, among other tasks, simulate the data and populate the database with it, so that immediately after deployment you will have a working end-to-end solution. 
+
+## Description
+
+The Demand Forecasting for Shipping and Distribution Solution uses historical demand data to forecast demand in future periods across varios customers, products and destinations. For instance, a shipping or delivery company wants to predict the quantities of the different products its customers want delivered at different locations at future times. Similarly a vendor or insurer wants to know the number of products that will be returned due to failures over the course of a year. A company can use these forecasts as input to an allocation tool that optimizes operations, such as delivery vehicles routing, or to plan capacity in the longer term.
+
+Characteristic of all of these forecasting cases are:
+
 - There are numerous kinds of items with differing volumes, that roll up under one or more category levels.
 - There is a history available for the quantity of the item at each time in the past.
 - The volumes of the items differ widely, with possibly a substantial number that have zero volume at times. 
 - The history of items shows both trend and seasonality, possibly at multiple time scales. 
-- The quantities commited or returned are not strongly price sensitive. In other words, the delivery company cannot strongly influence quantities by short-term changes in prices, although there may be other determinants that affect volume, such as weather. 
-      
+- The quantities commited or returned are not strongly price sensitive. In other words, the delivery company cannot 
+  strongly influence quantities by short-term changes in prices, although there may be other determinants that
+  affect volume, such as weather. 
+  
 Under these conditions we can take advantage of the hierarchy formed among the time series of the different items. By enforcing consistency so that the quantities lower in the hierarchy (e.g. individual product quantities) sum to the quantities above (customer product totals) we improve the accuracy of the overall forecast. The same applies if individual items are grouped into categories, even possibly categories that overlap. For example, one might be interested in forecasting demand of all products in total, by location, by product category, by customer, etc. 
 
-This solution computes forecasts at all aggregation levels in the hierarchy for each time period specified. For simplicity, we will refer to both hierarchial and grouped time series as "hierarchical time series."
+This Solution computes forecasts at all aggregation levels in the hierarchy for each time period specified. For simplicity, we will refer to both hierarchial and grouped time series as "hierarchical time series."
 
-## Description
+### Shipping and distribution forecasting in use
 
-#### Estimated Provisioning Time: 15 Minutes
-
-The Cortana Intelligence Suite provides advanced analytics tools through Microsoft Azure — data ingestion, data storage, data processing and advanced analytics components — all of the essential elements for building an demand forecasting solution for shipping and distribution.
-
-This solution combines several Azure services to provide powerful advantages. Azure SQL Server instance is used for storing historical distribution data, Azure Machine Learning (AML) webservice for hosting the R forecasting code, Azure Storage Account for intermediate storage of generated forecasts, and Azure Data Factory orchestrates and schedule the entire workflow.
-
-The '*Deploy*' button will launch a workflow that will deploy an instance of the solution within a Resource Group in the Azure subscription you specify. The solution includes multiple Azure services (described below) along with Azure functions that, among other tasks, simulate the data and populates the database with it, so that immediately after deployment you have a working end-to-end solution. 
+We thank Kotahi for working with us to develop this Solution. Kotahi is a supply chain company that plans, sources, and delivers shipping containers for New Zealand exports. Read their [Customer Story](https://customers.microsoft.com/en-us/story/kotahi) on how they engaged with us at Microsoft and a Microsoft Dynamics 2016 Inner Circle partner, DXC Eclipse, to put this into production. The solution helped to increase forecast accuracy and so improve their ability to choose the right-size container ships, at the right times, and dispatch them to the right ports.
 
 ## Solution architecture
 
-The following chart describes the solution architecture. 
+The following chart describes the Solution architecture. 
 
 ![Solution Architecture](https://github.com/Azure/cortana-intelligence-shipping-and-distribution-forecasting/blob/master/Technical%20Deployment%20Guide/media/architecture.PNG)
 
 ### What's under the hood
 
-The solution uses five types of resources hosted and managed in Azure: 
+The Solution uses five types of resources hosted and managed in Azure: 
 
 * *Azure SQL Server* instance (Azure SQL) for persistent storage, 
 * *Azure Machine Learning* (AML) webservice to host the R forecasting code, 
@@ -44,24 +50,23 @@ The solution uses five types of resources hosted and managed in Azure:
 * *Azure Data Factory* (ADF) that orchestrates regular runs of the AML model,  
 * *Power BI* dashboard to display and drill down on the forecasts. 
 
+The Solution automates the running of periodic forecasts, at a pace configured in ADF (e.g. monthly), where it learns a model with the current historical data, and predicts quantities for future periods for all products in the product hierarchy. Each forecast cycle consists of a round-trip from the database, through the model, then back to the database. Each cycle measures forecast accuracy by conventional data holdout techniques. You can configure the number of periods, the product categories and the hierarchy among products.  You need to load your current data in the Azure SQL database, and extract forecasts after each run from the same database. The Solution exposes the R code model to allow further customizations, and to allow you to simulate historical data, to test the Solution.
+
 ## Using the forecasting solution: Getting started
 
-See the [Technical Solution Guide](./Technical%20Deployment%20Guide/Technical-Solution-How-to-Guide.md) for a full set of instructions on how to put together and deploy the Shipping and Distribution Demand Forecasting Solution using the Cortana Intelligence Suite. For technical problems or questions about deploying this solution, please post in the issues tab of the repository.
+See the [Technical Solution Guide](https://github.com/Azure/cortana-intelligence-shipping-and-distribution-forecasting/blob/master/Technical%20Deployment%20Guide/Technical-Solution-Guide.md) for a full set of instructions on how to use this Solution as an example of what is possible with the Cortana Intelligence Suite. For technical problems or questions about deploying this Solution, please post in the issues tab of the repository.
 
 ## Solution Dashboard
 
-The snapshot below shows the PowerBI dashboard generated by the solution that gives insights into the forecasted demand.
+Here is an example of a snapshot of the forecasts generated by the solution in the PowerBI dashboard that comes with the Solution. 
 
 ![PowerBI Snapshot](https://github.com/Azure/cortana-intelligence-shipping-and-distribution-forecasting/blob/master/Technical%20Deployment%20Guide/media/powerbisnapshot.PNG)
-
-## Business Use Case
-
-We adapted this solution for a supply chain collaborator, Kotahi, a company that plans, sources, and delivers shipping containers for New Zealand exports. Read their [Customer Story](https://customers.microsoft.com/en-us/story/kotahi) on who they engaged Microsoft and Microsoft Dynamics 2016 Inner Circle partner UXC Eclipse to create an automated demand forecaster using our solution. The solution helped to increase accuracy and improve customer's ability to choose the right-size container ships, at the right times, and dispatch them to the right ports.
 
 ## Pricing
 Your Azure subscription used for the deployment will incur consumption charges on the services used in this solution, approximately $6.19(USD)/day. For more information, please visit [Pricing Calculator](https://azure.microsoft.com/pricing/calculator/).
 
->**Please delete the solution if you are not using it.**
+> Note: If you are no longer using the deployed solution, remember to delete it to stop incurring consumption charges. 
+
 
 
 
