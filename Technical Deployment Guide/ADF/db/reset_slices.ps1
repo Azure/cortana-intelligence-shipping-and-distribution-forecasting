@@ -8,49 +8,42 @@ The script sets the requested slice to 'Waiting' status for a selection of the d
 The script must be provided an active Azure subscription ID, a Resource Group name, 
 and the name of the Data Factory. 
 
-Requires latest Azure Powershell release: https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids 
+Requires Azure Powershell: https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids 
 
 #>
 
 param(
+[Parameter(Mandatory=$true,Position=1)]
 [string] $SubscriptionId,
+
+[Parameter(Mandatory=$true,Position=2)]
 [string] $ResourceGroupName,
+
+[Parameter(Mandatory=$true,Position=3)]
 [string] $DataFactoryName
 )
 
 $CopyToSqlPipelineName = "CopyToSql"
 $ForecastBlobName="ForecastHistoryBlob"
 $ForecastParametersBlob = "ForecastParametersBlob"
-$ForecastSqlName="ForecastHistorySql"
+$ForecastSqlName = "ForecastHistorySql"
 
-Write-Host "Checking Azure subscription..."
+$defaultContext = Get-AzureRmContext
 try {
-    $subs = Get-AzureRmSubscription | where Id -eq $SubscriptionId
-	if(-not $subs) {
-		throw "Azure subscription not found."
-	}
-
+	Write-Host "Trying to set context to requested subscription..."
+    Set-AzureRmContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 } catch {
-    Login-AzureRmAccount
-    $subs = Get-AzureRmSubscription
-    if(-not $subs) {
-        throw "Error listing subscription"
-    }
+	Write-Host "Subscription not found. Let's try logging into your account..."
+    $profile = Login-AzureRmAccount
+	$defaultContext = Get-AzureRmContext
+	Write-Host "Available subscriptions:"
+	Get-AzureRmSubscription
+	Write-Host "Setting context to requested subscription..."
+	Set-AzureRmContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 }
-
-$initialSub = Get-AzureRmContext
-$inputSub = $subs | where Id -eq $SubscriptionId
-if(-not $inputSub) {
-    throw "Unable to find subscription with ID",$SubscriptionId
-}
-$curSub = $inputSub | Select-AzureRmSubscription
-Write-Host "Set context to",$curSub.Subscription.Name
 
 Write-Host "Finding Data Factory..."
-$df = Get-AzureRmDataFactory -ResourceGroupName $ResourceGroupName -Name $DataFactoryName
-if(-not $df) {
-	throw "Could not find Data Factory",$DataFactoryName,"in Resource Group",$ResourceGroupName
-}
+$df = Get-AzureRmDataFactory -ResourceGroupName $ResourceGroupName -Name $DataFactoryName -ErrorAction Stop
 
 # Get the pipeline active dates
 Write-Host "Resetting Slices..."
@@ -68,6 +61,7 @@ if($success -ne $true) {
 	Write-Host "Set slice status failed for",$ForecastSqlName
 }
 
-$curSub = $initialSub | Select-AzureRmSubscription
-Write-Host "Set context back to",$curSub.Subscription.Name
+Write-Host ""
+Write-Host "Setting context back to default"
+Set-AzureRmContext -Context $defaultContext
 
