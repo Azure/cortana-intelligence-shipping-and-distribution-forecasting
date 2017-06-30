@@ -33,7 +33,7 @@ This solution computes forecasts at all aggregation levels in the hierarchy for 
 A "solution" refers to an assembly of Azure resources, such as predictive services, cloud storage an so on, 
 that consitute an application. The _Deploy_ button on this page runs a service that automates the set of steps to create a runnable copy of this application in your Azure subscription.  If you don't already have a subscription, then you need to sign up for one on [Azure](https://azure.microsoft.com/) first. 
 
-In addition if you are a System Integrator and ISV, you will be able to customize this solution to build derivative applications on Azure for your clients' specific needs. You can find the entire sources for this "Cortana Intelligence Quick Start" (CIQS) Installer on TODO [this Github repository]().  
+In addition if you are a System Integrator and ISV, you will be able to customize this solution to build derivative applications on Azure for your clients' specific needs. You can find the entire sources for this "Cortana Intelligence Quick Start" (CIQS) Installer on [this Github repository](https://github.com/Azure/cortana-intelligence-shipping-and-distribution-forecasting) under Deployment.  
 
 ### The fundamentals of hierarchical forecasting 
 
@@ -46,6 +46,8 @@ The novelty of this solution is to generate accurate forecasts that satisfy aggr
 The solution "out of the box" takes the monthly historical data you provide, and predicts the demand broken out by three levels of hierarchy, customer, product and, destination. Therefore, the solution assumes:
   - a specific data schema (described in more detail below in [Data Schema](#data-schema) section),
   - a monthly demand time series.
+
+It should be noted that the time series forecasting does very basic data processing, like removing time series with missing information, or imputing unknown quantities. Other than that, no aggregation of the data or any other processing is done. **The data needs to be aggregated to the monthly level** prior to including it with the solution.
 
 A number of configurations can be made through the exposed solution parameters. These parameters are stored in the SQL table (described in the [Data Schema section](#data-schema)) and passed on to the Azure Machine Learning web service that generates the forecasts. Some of these parameters are the starting and ending dates of the historical demand, the number of periods to forecast, the structure of the hierarchy or grouping rules, and so on. 
 
@@ -144,6 +146,8 @@ Here we provide more information about the tables used, their columns, valid val
 
 Table __HistoricalOrders__ contains data on historical orders. We provide field descriptions in a table below. All fields in this table except the Date and Quantity are used as disaggregation variables for the grouped (or hierarchical) time series. Date is used as time series time points, and Quantity is used as a time series data point that is used for modeling and forecasting.
 
+>NOTE: Historical orders need to be aggregated to the monthly level, as the solution currently performs only monthly time series forecasting, and does not perform any aggregation itself.
+
 | Field | Description| Type | Example | Comments |
 |:-----:|:----|:----|:----|:----|
 | CustomerName | Individual customer name | Text | Contoso | Key |
@@ -218,7 +222,7 @@ The solution comes with an example demand data set pre-loaded into the provision
 
 ### Generating new simulated data 
 
-To load new simulated data, you need to modify the following lines in the [ExampleDataGen.R](https://github.com/Azure/cortana-intelligence-shipping-and-distribution-forecasting/tree/master/Technical%20Deployment%20Guide/ADF/db) script to include the SQL Server credentials you generated as a part of the deployment.
+To load new simulated data, you need to modify the following lines in the [ExampleDataGen.R](https://github.com/Azure/cortana-intelligence-shipping-and-distribution-forecasting/tree/master/Technical%20Deployment%20Guide/ADF/db) script to include the following SQL Server credentials.
 
 ```bash
 # SQL Server credentials
@@ -227,10 +231,12 @@ myUser <- "<user>"
 myPassword <- "<passwd>"
 ```
 
-To generated different data groups or hierarchies, you can modify the following variables:
+SQL Server username and password are the credentials you created during the deployment.You can find the SQL Server name on [Azure portal](portal.azure.com) by navigating to the provisioned Azure SQL Server under the resource group with the deployment name you provided at the start of the deployment. 
+
+To generated different data groups, you can modify the following variables:
 
 ```bash
-# Default Hierarchy 
+# Default time series groups
 customerList <- c("Contoso","Protoso")
 productCategories <- c("Plastics","Metals")
 destinationList <- c("China","United States","India")
@@ -255,7 +261,7 @@ cd <psscript_directory_path>
 .\reset_slices.ps1 <subscription_id> <resource_group_name> <data_factory_name>
 ```
 
-where *psscript_directory_path* is the location of the PowerShell script, *subscription_id* is Azure subscription ID, *resource_group_name* is Resource Group name of the solution, and *data_factory_name* is the name of the Azure Data Factory deployed by the solution.
+where *psscript_directory_path* is the location of the PowerShell script, *subscription_id* is Azure subscription ID, *resource_group_name* is Resource Group name of the solution, and *data_factory_name* is the name of the Azure Data Factory deployed by the solution. You can find this information on the [Azure portal](portal.azure.com), by navigating to the resource group with the deployment name you provided at the start of the deployment. 
 
 ## Loading Your Own Data
 

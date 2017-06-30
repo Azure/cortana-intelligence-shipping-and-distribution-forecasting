@@ -1,0 +1,349 @@
+CustomerName,ProductCategory,Destination,Date,Quantity
+Contoso,Metals,China,2015-01-01,84
+Contoso,Metals,China,2015-02-01,80
+Contoso,Metals,China,2015-03-01,97
+Contoso,Metals,China,2015-04-01,85
+Contoso,Metals,China,2015-05-01,97
+Contoso,Metals,China,2015-06-01,93
+Contoso,Metals,China,2015-07-01,91
+Contoso,Metals,China,2015-08-01,87
+Contoso,Metals,China,2015-09-01,93
+Contoso,Metals,China,2015-10-01,94
+Contoso,Metals,China,2015-11-01,82
+Contoso,Metals,China,2015-12-01,74
+Contoso,Metals,China,2016-01-01,88
+Contoso,Metals,China,2016-02-01,96
+Contoso,Metals,China,2016-03-01,85
+Contoso,Metals,China,2016-04-01,93
+Contoso,Metals,China,2016-05-01,92
+Contoso,Metals,China,2016-06-01,92
+Contoso,Metals,China,2016-07-01,82
+Contoso,Metals,China,2016-08-01,87
+Contoso,Metals,China,2016-09-01,80
+Contoso,Metals,China,2016-10-01,84
+Contoso,Metals,China,2016-11-01,75
+Contoso,Metals,China,2016-12-01,89
+Contoso,Metals,China,2017-01-01,86
+Contoso,Metals,China,2017-02-01,85
+Contoso,Metals,China,2017-03-01,87
+Contoso,Metals,China,2017-04-01,87
+Contoso,Metals,China,2017-05-01,91
+Contoso,Metals,India,2015-01-01,64
+Contoso,Metals,India,2015-02-01,52
+Contoso,Metals,India,2015-03-01,47
+Contoso,Metals,India,2015-04-01,39
+Contoso,Metals,India,2015-05-01,43
+Contoso,Metals,India,2015-06-01,37
+Contoso,Metals,India,2015-07-01,41
+Contoso,Metals,India,2015-08-01,44
+Contoso,Metals,India,2015-09-01,51
+Contoso,Metals,India,2015-10-01,61
+Contoso,Metals,India,2015-11-01,66
+Contoso,Metals,India,2015-12-01,68
+Contoso,Metals,India,2016-01-01,75
+Contoso,Metals,India,2016-02-01,60
+Contoso,Metals,India,2016-03-01,52
+Contoso,Metals,India,2016-04-01,44
+Contoso,Metals,India,2016-05-01,30
+Contoso,Metals,India,2016-06-01,33
+Contoso,Metals,India,2016-07-01,37
+Contoso,Metals,India,2016-08-01,41
+Contoso,Metals,India,2016-09-01,52
+Contoso,Metals,India,2016-10-01,58
+Contoso,Metals,India,2016-11-01,61
+Contoso,Metals,India,2016-12-01,69
+Contoso,Metals,India,2017-01-01,57
+Contoso,Metals,India,2017-02-01,61
+Contoso,Metals,India,2017-03-01,58
+Contoso,Metals,India,2017-04-01,48
+Contoso,Metals,India,2017-05-01,42
+Contoso,Metals,United States,2015-01-01,103
+Contoso,Metals,United States,2015-02-01,119
+Contoso,Metals,United States,2015-03-01,101
+Contoso,Metals,United States,2015-04-01,100
+Contoso,Metals,United States,2015-05-01,77
+Contoso,Metals,United States,2015-06-01,101
+Contoso,Metals,United States,2015-07-01,104
+Contoso,Metals,United States,2015-08-01,86
+Contoso,Metals,United States,2015-09-01,99
+Contoso,Metals,United States,2015-10-01,108
+Contoso,Metals,United States,2015-11-01,109
+Contoso,Metals,United States,2015-12-01,105
+Contoso,Metals,United States,2016-01-01,100
+Contoso,Metals,United States,2016-02-01,107
+Contoso,Metals,United States,2016-03-01,125
+Contoso,Metals,United States,2016-04-01,92
+Contoso,Metals,United States,2016-05-01,87
+Contoso,Metals,United States,2016-06-01,93
+Contoso,Metals,United States,2016-07-01,118
+Contoso,Metals,United States,2016-08-01,107
+Contoso,Metals,United States,2016-09-01,83
+Contoso,Metals,United States,2016-10-01,113
+Contoso,Metals,United States,2016-11-01,99
+Contoso,Metals,United States,2016-12-01,112
+Contoso,Metals,United States,2017-01-01,103
+Contoso,Metals,United States,2017-02-01,96
+Contoso,Metals,United States,2017-03-01,99
+Contoso,Metals,United States,2017-04-01,107
+Contoso,Metals,United States,2017-05-01,93
+Contoso,Plastics,China,2015-01-01,158
+Contoso,Plastics,China,2015-02-01,158
+Contoso,Plastics,China,2015-03-01,157
+Contoso,Plastics,China,2015-04-01,139
+Contoso,Plastics,China,2015-05-01,139
+Contoso,Plastics,China,2015-06-01,121
+Contoso,Plastics,China,2015-07-01,131
+Contoso,Plastics,China,2015-08-01,142
+Contoso,Plastics,China,2015-09-01,142
+Contoso,Plastics,China,2015-10-01,134
+Contoso,Plastics,China,2015-11-01,157
+Contoso,Plastics,China,2015-12-01,148
+Contoso,Plastics,China,2016-01-01,162
+Contoso,Plastics,China,2016-02-01,156
+Contoso,Plastics,China,2016-03-01,142
+Contoso,Plastics,China,2016-04-01,129
+Contoso,Plastics,China,2016-05-01,127
+Contoso,Plastics,China,2016-06-01,129
+Contoso,Plastics,China,2016-07-01,135
+Contoso,Plastics,China,2016-08-01,132
+Contoso,Plastics,China,2016-09-01,112
+Contoso,Plastics,China,2016-10-01,147
+Contoso,Plastics,China,2016-11-01,160
+Contoso,Plastics,China,2016-12-01,157
+Contoso,Plastics,China,2017-01-01,153
+Contoso,Plastics,China,2017-02-01,136
+Contoso,Plastics,China,2017-03-01,143
+Contoso,Plastics,China,2017-04-01,148
+Contoso,Plastics,China,2017-05-01,137
+Contoso,Plastics,India,2015-01-01,61
+Contoso,Plastics,India,2015-02-01,55
+Contoso,Plastics,India,2015-03-01,56
+Contoso,Plastics,India,2015-04-01,42
+Contoso,Plastics,India,2015-05-01,30
+Contoso,Plastics,India,2015-06-01,22
+Contoso,Plastics,India,2015-07-01,38
+Contoso,Plastics,India,2015-08-01,41
+Contoso,Plastics,India,2015-09-01,41
+Contoso,Plastics,India,2015-10-01,54
+Contoso,Plastics,India,2015-11-01,63
+Contoso,Plastics,India,2015-12-01,59
+Contoso,Plastics,India,2016-01-01,58
+Contoso,Plastics,India,2016-02-01,50
+Contoso,Plastics,India,2016-03-01,46
+Contoso,Plastics,India,2016-04-01,43
+Contoso,Plastics,India,2016-05-01,34
+Contoso,Plastics,India,2016-06-01,37
+Contoso,Plastics,India,2016-07-01,32
+Contoso,Plastics,India,2016-08-01,38
+Contoso,Plastics,India,2016-09-01,47
+Contoso,Plastics,India,2016-10-01,51
+Contoso,Plastics,India,2016-11-01,65
+Contoso,Plastics,India,2016-12-01,63
+Contoso,Plastics,India,2017-01-01,61
+Contoso,Plastics,India,2017-02-01,59
+Contoso,Plastics,India,2017-03-01,43
+Contoso,Plastics,India,2017-04-01,36
+Contoso,Plastics,India,2017-05-01,40
+Contoso,Plastics,United States,2015-01-01,8
+Contoso,Plastics,United States,2015-02-01,8
+Contoso,Plastics,United States,2015-03-01,7
+Contoso,Plastics,United States,2015-04-01,0
+Contoso,Plastics,United States,2015-05-01,0
+Contoso,Plastics,United States,2015-06-01,6
+Contoso,Plastics,United States,2015-07-01,0
+Contoso,Plastics,United States,2015-08-01,1
+Contoso,Plastics,United States,2015-09-01,4
+Contoso,Plastics,United States,2015-10-01,6
+Contoso,Plastics,United States,2015-11-01,4
+Contoso,Plastics,United States,2015-12-01,10
+Contoso,Plastics,United States,2016-01-01,0
+Contoso,Plastics,United States,2016-02-01,5
+Contoso,Plastics,United States,2016-03-01,0
+Contoso,Plastics,United States,2016-04-01,0
+Contoso,Plastics,United States,2016-05-01,0
+Contoso,Plastics,United States,2016-06-01,0
+Contoso,Plastics,United States,2016-07-01,0
+Contoso,Plastics,United States,2016-08-01,0
+Contoso,Plastics,United States,2016-09-01,0
+Contoso,Plastics,United States,2016-10-01,12
+Contoso,Plastics,United States,2016-11-01,7
+Contoso,Plastics,United States,2016-12-01,0
+Contoso,Plastics,United States,2017-01-01,12
+Contoso,Plastics,United States,2017-02-01,5
+Contoso,Plastics,United States,2017-03-01,0
+Contoso,Plastics,United States,2017-04-01,6
+Contoso,Plastics,United States,2017-05-01,0
+Protoso,Metals,China,2015-01-01,78
+Protoso,Metals,China,2015-02-01,82
+Protoso,Metals,China,2015-03-01,62
+Protoso,Metals,China,2015-04-01,70
+Protoso,Metals,China,2015-05-01,53
+Protoso,Metals,China,2015-06-01,54
+Protoso,Metals,China,2015-07-01,60
+Protoso,Metals,China,2015-08-01,72
+Protoso,Metals,China,2015-09-01,68
+Protoso,Metals,China,2015-10-01,76
+Protoso,Metals,China,2015-11-01,77
+Protoso,Metals,China,2015-12-01,72
+Protoso,Metals,China,2016-01-01,80
+Protoso,Metals,China,2016-02-01,72
+Protoso,Metals,China,2016-03-01,65
+Protoso,Metals,China,2016-04-01,55
+Protoso,Metals,China,2016-05-01,58
+Protoso,Metals,China,2016-06-01,65
+Protoso,Metals,China,2016-07-01,63
+Protoso,Metals,China,2016-08-01,74
+Protoso,Metals,China,2016-09-01,70
+Protoso,Metals,China,2016-10-01,75
+Protoso,Metals,China,2016-11-01,79
+Protoso,Metals,China,2016-12-01,78
+Protoso,Metals,China,2017-01-01,77
+Protoso,Metals,China,2017-02-01,73
+Protoso,Metals,China,2017-03-01,65
+Protoso,Metals,China,2017-04-01,64
+Protoso,Metals,China,2017-05-01,60
+Protoso,Metals,India,2015-01-01,117
+Protoso,Metals,India,2015-02-01,106
+Protoso,Metals,India,2015-03-01,89
+Protoso,Metals,India,2015-04-01,92
+Protoso,Metals,India,2015-05-01,93
+Protoso,Metals,India,2015-06-01,68
+Protoso,Metals,India,2015-07-01,75
+Protoso,Metals,India,2015-08-01,82
+Protoso,Metals,India,2015-09-01,87
+Protoso,Metals,India,2015-10-01,91
+Protoso,Metals,India,2015-11-01,107
+Protoso,Metals,India,2015-12-01,105
+Protoso,Metals,India,2016-01-01,96
+Protoso,Metals,India,2016-02-01,108
+Protoso,Metals,India,2016-03-01,91
+Protoso,Metals,India,2016-04-01,87
+Protoso,Metals,India,2016-05-01,70
+Protoso,Metals,India,2016-06-01,91
+Protoso,Metals,India,2016-07-01,81
+Protoso,Metals,India,2016-08-01,67
+Protoso,Metals,India,2016-09-01,73
+Protoso,Metals,India,2016-10-01,92
+Protoso,Metals,India,2016-11-01,100
+Protoso,Metals,India,2016-12-01,93
+Protoso,Metals,India,2017-01-01,109
+Protoso,Metals,India,2017-02-01,109
+Protoso,Metals,India,2017-03-01,93
+Protoso,Metals,India,2017-04-01,85
+Protoso,Metals,India,2017-05-01,86
+Protoso,Metals,United States,2015-01-01,85
+Protoso,Metals,United States,2015-02-01,82
+Protoso,Metals,United States,2015-03-01,87
+Protoso,Metals,United States,2015-04-01,86
+Protoso,Metals,United States,2015-05-01,86
+Protoso,Metals,United States,2015-06-01,94
+Protoso,Metals,United States,2015-07-01,86
+Protoso,Metals,United States,2015-08-01,86
+Protoso,Metals,United States,2015-09-01,86
+Protoso,Metals,United States,2015-10-01,75
+Protoso,Metals,United States,2015-11-01,97
+Protoso,Metals,United States,2015-12-01,81
+Protoso,Metals,United States,2016-01-01,95
+Protoso,Metals,United States,2016-02-01,86
+Protoso,Metals,United States,2016-03-01,101
+Protoso,Metals,United States,2016-04-01,84
+Protoso,Metals,United States,2016-05-01,93
+Protoso,Metals,United States,2016-06-01,71
+Protoso,Metals,United States,2016-07-01,80
+Protoso,Metals,United States,2016-08-01,82
+Protoso,Metals,United States,2016-09-01,89
+Protoso,Metals,United States,2016-10-01,73
+Protoso,Metals,United States,2016-11-01,84
+Protoso,Metals,United States,2016-12-01,89
+Protoso,Metals,United States,2017-01-01,77
+Protoso,Metals,United States,2017-02-01,87
+Protoso,Metals,United States,2017-03-01,81
+Protoso,Metals,United States,2017-04-01,85
+Protoso,Metals,United States,2017-05-01,91
+Protoso,Plastics,China,2015-01-01,60
+Protoso,Plastics,China,2015-02-01,39
+Protoso,Plastics,China,2015-03-01,35
+Protoso,Plastics,China,2015-04-01,26
+Protoso,Plastics,China,2015-05-01,7
+Protoso,Plastics,China,2015-06-01,28
+Protoso,Plastics,China,2015-07-01,9
+Protoso,Plastics,China,2015-08-01,13
+Protoso,Plastics,China,2015-09-01,27
+Protoso,Plastics,China,2015-10-01,50
+Protoso,Plastics,China,2015-11-01,45
+Protoso,Plastics,China,2015-12-01,47
+Protoso,Plastics,China,2016-01-01,72
+Protoso,Plastics,China,2016-02-01,48
+Protoso,Plastics,China,2016-03-01,31
+Protoso,Plastics,China,2016-04-01,13
+Protoso,Plastics,China,2016-05-01,4
+Protoso,Plastics,China,2016-06-01,19
+Protoso,Plastics,China,2016-07-01,16
+Protoso,Plastics,China,2016-08-01,0
+Protoso,Plastics,China,2016-09-01,48
+Protoso,Plastics,China,2016-10-01,55
+Protoso,Plastics,China,2016-11-01,34
+Protoso,Plastics,China,2016-12-01,45
+Protoso,Plastics,China,2017-01-01,44
+Protoso,Plastics,China,2017-02-01,58
+Protoso,Plastics,China,2017-03-01,42
+Protoso,Plastics,China,2017-04-01,26
+Protoso,Plastics,China,2017-05-01,4
+Protoso,Plastics,India,2015-01-01,75
+Protoso,Plastics,India,2015-02-01,76
+Protoso,Plastics,India,2015-03-01,77
+Protoso,Plastics,India,2015-04-01,54
+Protoso,Plastics,India,2015-05-01,67
+Protoso,Plastics,India,2015-06-01,33
+Protoso,Plastics,India,2015-07-01,44
+Protoso,Plastics,India,2015-08-01,27
+Protoso,Plastics,India,2015-09-01,46
+Protoso,Plastics,India,2015-10-01,46
+Protoso,Plastics,India,2015-11-01,67
+Protoso,Plastics,India,2015-12-01,66
+Protoso,Plastics,India,2016-01-01,86
+Protoso,Plastics,India,2016-02-01,100
+Protoso,Plastics,India,2016-03-01,78
+Protoso,Plastics,India,2016-04-01,60
+Protoso,Plastics,India,2016-05-01,56
+Protoso,Plastics,India,2016-06-01,35
+Protoso,Plastics,India,2016-07-01,37
+Protoso,Plastics,India,2016-08-01,28
+Protoso,Plastics,India,2016-09-01,46
+Protoso,Plastics,India,2016-10-01,46
+Protoso,Plastics,India,2016-11-01,64
+Protoso,Plastics,India,2016-12-01,52
+Protoso,Plastics,India,2017-01-01,90
+Protoso,Plastics,India,2017-02-01,99
+Protoso,Plastics,India,2017-03-01,75
+Protoso,Plastics,India,2017-04-01,57
+Protoso,Plastics,India,2017-05-01,52
+Protoso,Plastics,United States,2015-01-01,170
+Protoso,Plastics,United States,2015-02-01,175
+Protoso,Plastics,United States,2015-03-01,180
+Protoso,Plastics,United States,2015-04-01,179
+Protoso,Plastics,United States,2015-05-01,186
+Protoso,Plastics,United States,2015-06-01,188
+Protoso,Plastics,United States,2015-07-01,181
+Protoso,Plastics,United States,2015-08-01,179
+Protoso,Plastics,United States,2015-09-01,174
+Protoso,Plastics,United States,2015-10-01,172
+Protoso,Plastics,United States,2015-11-01,173
+Protoso,Plastics,United States,2015-12-01,171
+Protoso,Plastics,United States,2016-01-01,176
+Protoso,Plastics,United States,2016-02-01,174
+Protoso,Plastics,United States,2016-03-01,180
+Protoso,Plastics,United States,2016-04-01,185
+Protoso,Plastics,United States,2016-05-01,181
+Protoso,Plastics,United States,2016-06-01,184
+Protoso,Plastics,United States,2016-07-01,179
+Protoso,Plastics,United States,2016-08-01,185
+Protoso,Plastics,United States,2016-09-01,169
+Protoso,Plastics,United States,2016-10-01,170
+Protoso,Plastics,United States,2016-11-01,172
+Protoso,Plastics,United States,2016-12-01,170
+Protoso,Plastics,United States,2017-01-01,177
+Protoso,Plastics,United States,2017-02-01,175
+Protoso,Plastics,United States,2017-03-01,180
+Protoso,Plastics,United States,2017-04-01,178
+Protoso,Plastics,United States,2017-05-01,180

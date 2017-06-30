@@ -1,0 +1,474 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageAccountKey": {
+      "type": "securestring"
+    },
+    "codeModuleUri": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "namePrefix": "[resourceGroup().name]",
+    "uniqueNamePrefix": "[toLower(concat(variables('namePrefix'), uniqueString(subscription().subscriptionId)))]",
+    "location": "[resourceGroup().location]",
+
+    "planName": "[concat(variables('uniqueNamePrefix'),'plan')]",
+    "planSkuName": "S1",
+    "planSkuTier": "Standard",
+    "mlWebServiceName": "[concat(variables('uniqueNamePrefix'),'fcastmlsvc')]",
+    "mlWebServiceTitle": "ML Forecast Service"
+  },
+  "resources": [
+    {
+      "apiVersion": "2016-05-01-preview",
+      "name": "[variables('planName')]",
+      "type": "Microsoft.MachineLearning/CommitmentPlans",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "[variables('planSkuName')]",
+        "tier": "[variables('planSkuTier')]",
+        "capacity": "1"
+      },
+      "properties": {
+
+      }
+    },
+    {
+      "apiVersion": "2016-05-01-preview",
+      "name": "[variables('mlWebServiceName')]",
+      "type": "Microsoft.MachineLearning/webservices",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.MachineLearning/CommitmentPlans/', variables('planName'))]"
+      ],
+      "properties": {
+        "packageType": "Graph",
+        "package": {
+          "nodes": {
+            "node1": {
+              "assetId": "asset1",
+              "parameters": {
+                "Please Specify Data Source": "SqlAzure",
+                "Database Server Name": "server.database.windows.net",
+                "Database Name": "db_name",
+                "Server User Account Name": "user",
+                "Server User Account Password": "passwd",
+                "Trust Server Certificate": "True",
+                "Database Query": "select * from table"
+              }
+            },
+            "node2": {
+              "assetId": "asset2",
+              "parameters": {
+                "Column": "%7B%22isFilter%22%3Atrue%2C%22rules%22%3A%5B%7B%22ruleType%22%3A%22ColumnNames%22%2C%22columns%22%3A%5B%22Date%22%5D%2C%22exclude%22%3Afalse%7D%5D%2C%22ui%22%3A%7B%22withRules%22%3Atrue%7D%7D",
+                "Data Type": "String",
+                "Categorical": "Unchanged",
+                "Fields": "Unchanged"
+              }
+            },
+            "node3": {
+              "assetId": "asset2",
+              "parameters": {
+                "Column": "%7B%22isFilter%22%3Atrue%2C%22rules%22%3A%5B%7B%22ruleType%22%3A%22ColumnNames%22%2C%22columns%22%3A%5B%22EarliestOrderHistoryDate%22%2C%22LatestOrderHistoryDate%22%5D%2C%22exclude%22%3Afalse%7D%5D%7D",
+                "Data Type": "String",
+                "Categorical": "Unchanged",
+                "Fields": "Unchanged"
+              }
+            },
+            "node4": {
+              "assetId": "asset3",
+              "parameters": { }
+            },
+            "node5": {
+              "inputId": "input1"
+            },
+            "node6": {
+              "outputId": "output1"
+            },
+            "node7": {
+              "outputId": "output2"
+            }
+          },
+          "edges": [
+            {
+              "sourceNodeId": "node1",
+              "sourcePortId": "Results dataset",
+              "targetNodeId": "node2",
+              "targetPortId": "Dataset"
+            },
+            {
+              "sourceNodeId": "node2",
+              "sourcePortId": "Results dataset",
+              "targetNodeId": "node4",
+              "targetPortId": "dataset"
+            },
+            {
+              "sourceNodeId": "node3",
+              "sourcePortId": "Results dataset",
+              "targetNodeId": "node4",
+              "targetPortId": "db_params"
+            },
+            {
+              "sourceNodeId": "node5",
+              "targetNodeId": "node3",
+              "targetPortId": "Dataset"
+            },
+            {
+              "sourceNodeId": "node4",
+              "sourcePortId": "forecast_hist",
+              "targetNodeId": "node6"
+            },
+            {
+              "sourceNodeId": "node4",
+              "sourcePortId": "forecast_stat",
+              "targetNodeId": "node7"
+            }
+          ],
+          "graphParameters": {
+            "Database server name": {
+              "description": "Database server name",
+              "type": "String",
+              "links": [
+                {
+                  "nodeId": "node1",
+                  "parameterKey": "Database Server Name"
+                }
+              ]
+            },
+            "Database name": {
+              "description": "Database name",
+              "type": "String",
+              "links": [
+                {
+                  "nodeId": "node1",
+                  "parameterKey": "Database Name"
+                }
+              ]
+            },
+            "User name": {
+              "description": "User name",
+              "type": "String",
+              "links": [
+                {
+                  "nodeId": "node1",
+                  "parameterKey": "Server User Account Name"
+                }
+              ]
+            },
+            "Password": {
+              "description": "Password",
+              "type": "Credential",
+              "links": [
+                {
+                  "nodeId": "node1",
+                  "parameterKey": "Server User Account Password"
+                }
+              ]
+            },
+            "HistoricalOrders query": {
+              "description": "HistoricalOrders query",
+              "type": "Script",
+              "links": [
+                {
+                  "nodeId": "node1",
+                  "parameterKey": "Database Query"
+                }
+              ]
+            }
+          }
+        },
+        "title": "Demand Forecast",
+        "description": "",
+        "readOnly": false,
+        "exposeSampleData": false,
+        "realtimeConfiguration": {
+          "maxConcurrentCalls": 20
+        },
+        "diagnostics": {
+          "level": "None"
+        },
+        "storageAccount": {
+          "name": "[parameters('storageAccountName')]",
+          "key": "[parameters('storageAccountKey')]"
+        },
+        "commitmentPlan": {
+          "id": "[resourceId('Microsoft.MachineLearning/CommitmentPlans', variables('planName'))]"
+        },
+        "input": {
+          "title": "",
+          "description": "",
+          "type": "object",
+          "properties": {
+            "input1": {
+              "title": "",
+              "description": "",
+              "type": "object",
+              "properties": {
+                "ForecastParametersId": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false
+                },
+                "EarliestOrderHistoryDate": {
+                  "type": "String",
+                  "format": "Date-time",
+                  "x-ms-isnullable": false
+                },
+                "LatestOrderHistoryDate": {
+                  "type": "String",
+                  "format": "Date-time",
+                  "x-ms-isnullable": false
+                },
+                "ForecastHorizonMonths": {
+                  "type": "Integer",
+                  "format": "Int32",
+                  "x-ms-isnullable": false
+                },
+                "EvaluationWindow": {
+                  "type": "Integer",
+                  "format": "Int32",
+                  "x-ms-isnullable": false
+                },
+                "GTSorHTS": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false
+                },
+                "CombiningGTSMethod": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false
+                },
+                "UnivariateTSMethod": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false
+                },
+                "GTSCombWeights": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false
+                }
+              }
+            }
+          }
+        },
+        "output": {
+          "title": "",
+          "description": "",
+          "type": "object",
+          "properties": {
+            "output1": {
+              "title": "",
+              "description": "",
+              "type": "object",
+              "properties": {
+                "ForecastParametersId": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false,
+                  "x-ms-isordered": false
+                },
+                "ModelVersion": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false,
+                  "x-ms-isordered": false
+                },
+                "MLCallDate": {
+                  "type": "String",
+                  "format": "Date-time",
+                  "x-ms-isnullable": false
+                },
+                "RMSE": {
+                  "type": "Number",
+                  "format": "Double",
+                  "x-ms-isnullable": false
+                },
+                "MAE": {
+                  "type": "Number",
+                  "format": "Double",
+                  "x-ms-isnullable": false
+                },
+                "MPE": {
+                  "type": "Number",
+                  "format": "Double",
+                  "x-ms-isnullable": false
+                },
+                "MAPE": {
+                  "type": "Number",
+                  "format": "Double",
+                  "x-ms-isnullable": false
+                },
+                "MASE": {
+                  "type": "Number",
+                  "format": "Double",
+                  "x-ms-isnullable": false
+                },
+                "SMAPE": {
+                  "type": "Number",
+                  "format": "Double",
+                  "x-ms-isnullable": false
+                },
+                "MLCallLog": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false,
+                  "x-ms-isordered": false
+                }
+              }
+            },
+            "output2": {
+              "title": "",
+              "description": "",
+              "type": "object",
+              "properties": {
+                "CustomerName": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false
+                },
+                "ProductCategory": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false
+                },
+                "Destination": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false
+                },
+                "ForecastDate": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false,
+                  "x-ms-isordered": false
+                },
+                "Quantity": {
+                  "type": "Number",
+                  "format": "Double",
+                  "x-ms-isnullable": false
+                },
+                "ForecastParametersId": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false,
+                  "x-ms-isordered": false
+                },
+                "ModelVersion": {
+                  "type": "String",
+                  "format": "",
+                  "x-ms-isnullable": false,
+                  "x-ms-isordered": false
+                }
+              }
+            }
+          }
+        },
+        "exampleRequest": {
+          "inputs": {
+            "input1": [
+              [
+                201705,
+                "2015-01-01T00:00:00Z",
+                "2017-05-01T00:00:00Z",
+                3,
+                3,
+                "gts",
+                "bu",
+                "ets",
+                "nseries"
+              ]
+            ]
+          },
+          "globalParameters": {
+            "Database server name": "server.database.windows.net",
+            "Database name": "db_name",
+            "User name": "user",
+            "Password": "passwd",
+            "HistoricalOrders query": "select * from table"
+          }
+        },
+        "assets": {
+          "asset1": {
+            "name": "Import Data",
+            "type": "Module",
+            "locationInfo": {
+              "uri": "aml://module/506153734175476c4f62416c57734963.4e1b0fe6aded4b3fa36f39b8862b9004.v1-default-1744",
+              "credentials": ""
+            }
+          },
+          "asset2": {
+            "name": "Edit Metadata",
+            "type": "Module",
+            "locationInfo": {
+              "uri": "aml://module/506153734175476c4f62416c57734963.370b6676c11c486fbf7335349f842a66.v1-default-1742",
+              "credentials": ""
+            }
+          },
+          "asset3": {
+            "name": "Distribution Demand Forecast",
+            "id": "c6494ee925734ea08a1d4a0f29c6e370.3edc2ed75b9948eb9eaa98de6bb29a08.v1-default-36",
+            "type": "Module",
+            "locationInfo": {
+              "uri": "[parameters('codeModuleUri')]"
+            },
+            "inputPorts": {
+              "dataset": {
+                "type": "Dataset"
+              },
+              "db_params": {
+                "type": "Dataset"
+              }
+            },
+            "outputPorts": {
+              "forecast_hist": {
+                "type": "Dataset"
+              },
+              "forecast_stat": {
+                "type": "Dataset"
+              },
+              "deviceOutput": {
+                "type": "Dataset"
+              }
+            },
+            "metadata": {
+              "UseDrawBridge": null,
+              "runTimeVersionId": "6.0",
+              "InterfaceString": "/dll \"37660bbb28a84fb59601f7038e57ca1f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;Microsoft.Analytics.Modules.Custom._3edc2ed75b9948eb9eaa98de6bb29a08.Dll.CustomModule;Run\" /Output0 {out:Dataset:forecast_hist} /Output1 {out:Dataset:forecast_stat} /Output2 {out:Dataset:deviceOutput} /dataset {in:Dataset|DataTableDotNet|GenericCSV|GenericCSVNoHeader|ARFF|GenericTSV|GenericTSVNoHeader:dataset} /db_params {in:Dataset|DataTableDotNet|GenericCSV|GenericCSVNoHeader|ARFF|GenericTSV|GenericTSVNoHeader:db_params} ",
+              "Description": "Predict freight demand using heirarchical forecasting methods",
+              "hostVersionId": "3.1.0",
+              "host": "R",
+              "FamilyId": "3edc2ed75b9948eb9eaa98de6bb29a08"
+            },
+            "parameters": [ ]
+          }
+        },
+        "parameters": {
+          "database server name": "",
+          "database name": "",
+          "user name": "",
+          "password": "",
+          "historicalOrders query": ""
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "mlWebServiceName": {
+      "type": "string",
+      "value": "[variables('mlWebServiceName')]"
+    },
+    "amlWebServiceUrl": {
+      "type": "string",
+      "value": "[concat('https://services.azureml.net/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.MachineLearning/webServices/', variables('mlWebServiceName'), '/quickstart')]"
+    }
+  }
+}
+
+    

@@ -1,0 +1,795 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlServerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of SQL Server"
+      }
+    },
+    "sqlServerUser": {
+      "type": "string",
+      "metadata": {
+        "description": "User name for SQL Server"
+      }
+    },
+    "sqlServerPasswd": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for SQL Server"
+      }
+    },
+    "sqlDbName": {
+      "type": "string",
+      "metadata": {
+        "description": "Database to access in SQL Server"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Storage Account"
+      }
+    },
+    "storageAccountKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Key for Storage Account"
+      }
+    },
+    "mlBESEndpointUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Batch Execution Endpoint URL for Machine Learning Service"
+      }
+    },
+    "mlApiKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "API Key for Machine Learning Service"
+      }
+    },
+    "blobLandingContainer": {
+      "type": "string",
+      "metadata": {
+        "description": "Blob container for intermediate storage"
+      }
+    }
+  },
+  "variables": {
+    "namePrefix": "[resourceGroup().name]",
+    "uniqueNamePrefix": "[toLower(concat(variables('namePrefix'), uniqueString(subscription().subscriptionId)))]",
+    "dataFactoryName": "[concat(variables('uniqueNamePrefix'),'df')]",
+    "pipelineFrequency": "Month",
+    "pipelineStartDate": "2017-03-01T00:00:00Z",
+    "storageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', parameters('storageAccountKey'))]",
+    "sqlServerConnectionString": "[concat('Data Source=tcp:', parameters('sqlServerName'), '.database.windows.net,1433;Initial Catalog=', parameters('sqlDbName'), ';Integrated Security=False;User ID=', parameters('sqlServerUser'), ';Password=', parameters('sqlServerPasswd'), ';Connect Timeout=30;Encrypt=True')]"
+  },
+  "resources": [
+    {
+      "name": "[variables('dataFactoryName')]",
+      "apiVersion": "2015-10-01",
+      "type": "Microsoft.DataFactory/datafactories",
+      "location": "northeurope",
+      "resources": [
+        {
+          "dependsOn": [
+            "[variables('dataFactoryName')]"
+          ],
+          "apiVersion": "2015-10-01",
+          "type": "linkedservices",
+          "name": "AzureBlob",
+          "properties": {
+            "description": "Blob storage account for staging temp blobs",
+            "type": "AzureStorage",
+            "typeProperties": {
+              "connectionString": "[variables('storageAccountConnectionString')]"
+            }
+          }
+        },
+        {
+          "dependsOn": [
+            "[variables('dataFactoryName')]"
+          ],
+          "apiVersion": "2015-10-01",
+          "type": "linkedservices",
+          "name": "AzureSql",
+          "properties": {
+            "description": "Data Warehouse Azure SQL",
+            "type": "AzureSqlDatabase",
+            "typeProperties": {
+              "connectionString": "[variables('sqlServerConnectionString')]"
+            }
+          }
+        },
+        {
+          "dependsOn": [
+            "[variables('dataFactoryName')]"
+          ],
+          "apiVersion": "2015-10-01",
+          "type": "linkedservices",
+          "name": "ForecastAzureML",
+          "properties": {
+            "description": "ML web service for generating demand forecast",
+            "type": "AzureML",
+            "typeProperties": {
+              "mlEndpoint": "[parameters('mlBESEndpointUrl')]",
+              "apiKey": "[parameters('mlApiKey')]"
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "HistoricalOrdersSql",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureSql"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "published": false,
+            "type": "AzureSqlTable",
+            "linkedServiceName": "AzureSql",
+            "typeProperties": {
+              "tableName": "FcastML.HistoricalOrders"
+            },
+            "availability": {
+              "frequency": "[variables('pipelineFrequency')]",
+              "interval": 1
+            },
+            "external": true,
+            "policy": {
+              "externalData": {
+                "retryInterval": "00:30:00",
+                "retryTimeout": "00:40:00",
+                "maximumRetry": 3
+              }
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "ForecastParametersSql",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureSql"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "published": false,
+            "type": "AzureSqlTable",
+            "linkedServiceName": "AzureSql",
+            "typeProperties": {
+              "tableName": "FcastML.ForecastParameters"
+            },
+            "availability": {
+              "frequency": "[variables('pipelineFrequency')]",
+              "interval": 1
+            },
+            "external": true,
+            "policy": {
+              "externalData": {
+                "retryInterval": "00:30:00",
+                "retryTimeout": "00:40:00",
+                "maximumRetry": 3
+              }
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "ForecastParametersBlob",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureBlob"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "published": false,
+            "type": "AzureBlob",
+            "linkedServiceName": "AzureBlob",
+            "typeProperties": {
+              "fileName": "forecast-parameters-{Day}.tsv",
+              "folderPath": "[concat(parameters('blobLandingContainer'), '/{Year}/{Month}')]",
+              "format": {
+                "type": "TextFormat",
+                "columnDelimiter": "\t"
+              },
+              "partitionedBy": [
+                {
+                  "name": "Year",
+                  "value": {
+                    "type": "DateTime",
+                    "date": "SliceStart",
+                    "format": "yyyy"
+                  }
+                },
+                {
+                  "name": "Month",
+                  "value": {
+                    "type": "DateTime",
+                    "date": "SliceStart",
+                    "format": "MM"
+                  }
+                },
+                {
+                  "name": "Day",
+                  "value": {
+                    "type": "DateTime",
+                    "date": "SliceStart",
+                    "format": "dd"
+                  }
+                }
+              ]
+            },
+            "availability": {
+              "frequency": "[variables('pipelineFrequency')]",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "ForecastHistoryBlob",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureBlob"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "structure": [
+              {
+                "name": "ForecastParametersId",
+                "type": "String"
+              },
+              {
+                "name": "ModelVersion",
+                "type": "String"
+              },
+              {
+                "name": "MLCallDate",
+                "type": "Datetime"
+              },
+              {
+                "name": "RMSE",
+                "type": "Double"
+              },
+              {
+                "name": "MAE",
+                "type": "Double"
+              },
+              {
+                "name": "MPE",
+                "type": "Double"
+              },
+              {
+                "name": "MAPE",
+                "type": "Double"
+              },
+              {
+                "name": "MASE",
+                "type": "Double"
+              },
+              {
+                "name": "SMAPE",
+                "type": "Double"
+              },
+              {
+                "name": "MLCallLog",
+                "type": "String"
+              }
+            ],
+            "published": false,
+            "type": "AzureBlob",
+            "linkedServiceName": "AzureBlob",
+            "typeProperties": {
+              "fileName": "forecast-history-{Day}.tsv",
+              "folderPath": "[concat(parameters('blobLandingContainer'), '/{Year}/{Month}')]",
+              "format": {
+                "type": "TextFormat",
+                "columnDelimiter": "\t"
+              },
+              "partitionedBy": [
+                {
+                  "name": "Year",
+                  "value": {
+                    "type": "DateTime",
+                    "date": "SliceStart",
+                    "format": "yyyy"
+                  }
+                },
+                {
+                  "name": "Month",
+                  "value": {
+                    "type": "DateTime",
+                    "date": "SliceStart",
+                    "format": "MM"
+                  }
+                },
+                {
+                  "name": "Day",
+                  "value": {
+                    "type": "DateTime",
+                    "date": "SliceStart",
+                    "format": "dd"
+                  }
+                }
+              ]
+            },
+            "availability": {
+              "frequency": "[variables('pipelineFrequency')]",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "StatisticalForecastBlob",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureBlob"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "structure": [
+              {
+                "name": "CustomerName",
+                "type": "String"
+              },
+              {
+                "name": "ProductCategory",
+                "type": "String"
+              },
+              {
+                "name": "Destination",
+                "type": "String"
+              },
+              {
+                "name": "ForecastDate",
+                "type": "String"
+              },
+              {
+                "name": "Quantity",
+                "type": "Double"
+              },
+              {
+                "name": "ForecastParametersId",
+                "type": "String"
+              },
+              {
+                "name": "ModelVersion",
+                "type": "String"
+              }
+            ],
+            "published": false,
+            "type": "AzureBlob",
+            "linkedServiceName": "AzureBlob",
+            "typeProperties": {
+              "fileName": "statistical-forecast-{Day}.tsv",
+              "folderPath": "[concat(parameters('blobLandingContainer'), '/{Year}/{Month}')]",
+              "format": {
+                "type": "TextFormat",
+                "columnDelimiter": "\t"
+              },
+              "partitionedBy": [
+                {
+                  "name": "Year",
+                  "value": {
+                    "type": "DateTime",
+                    "date": "SliceStart",
+                    "format": "yyyy"
+                  }
+                },
+                {
+                  "name": "Month",
+                  "value": {
+                    "type": "DateTime",
+                    "date": "SliceStart",
+                    "format": "MM"
+                  }
+                },
+                {
+                  "name": "Day",
+                  "value": {
+                    "type": "DateTime",
+                    "date": "SliceStart",
+                    "format": "dd"
+                  }
+                }
+              ]
+            },
+            "availability": {
+              "frequency": "[variables('pipelineFrequency')]",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "ETL_ForecastHistorySql",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureSql"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "published": false,
+            "type": "AzureSqlTable",
+            "linkedServiceName": "AzureSql",
+            "typeProperties": {
+              "tableName": "ForecastHistory"
+            },
+            "availability": {
+              "frequency": "[variables('pipelineFrequency')]",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "ETL_StatisticalForecastSql",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureSql"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "published": false,
+            "type": "AzureSqlTable",
+            "linkedServiceName": "AzureSql",
+            "typeProperties": {
+              "tableName": "StatisticalForecast"
+            },
+            "availability": {
+              "frequency": "[variables('pipelineFrequency')]",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "ForecastHistorySql",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureSql"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "published": false,
+            "type": "AzureSqlTable",
+            "linkedServiceName": "AzureSql",
+            "typeProperties": {
+              "tableName": "FcastML.ForecastHistory"
+            },
+            "availability": {
+              "frequency": "[variables('pipelineFrequency')]",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "StatisticalForecastSql",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureSql"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "published": false,
+            "type": "AzureSqlTable",
+            "linkedServiceName": "AzureSql",
+            "typeProperties": {
+              "tableName": "FcastML.StatisticalForecast"
+            },
+            "availability": {
+              "frequency": "[variables('pipelineFrequency')]",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "dataPipelines",
+          "name": "ReadSliceForecastParameters",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureBlob",
+            "AzureSql",
+            "ForecastParametersSql",
+            "ForecastParametersBlob"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "description": "Read the the parameter set corresponding to the current slice",
+            "activities": [
+              {
+                "type": "Copy",
+                "typeProperties": {
+                  "source": {
+                    "type": "SqlSource",
+                    "sqlReaderStoredProcedureName": "FcastETL.spReadSliceForecastParameters",
+                    "storedProcedureParameters": {
+                      "SliceStart": {
+                        "value": "$$Text.Format('{0:yyyy-MM-dd}', SliceStart)"
+                      },
+                      "SliceEnd": {
+                        "value": "$$Text.Format('{0:yyyy-MM-dd}', SliceEnd)"
+                      }
+                    }
+                  },
+                  "sink": {
+                    "type": "BlobSink",
+                    "blobWriterAddHeader": true,
+                    "writeBatchSize": 0,
+                    "writeBatchTimeout": "00:00:00"
+                  }
+                },
+                "inputs": [
+                  {
+                    "name": "ForecastParametersSql"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "ForecastParametersBlob"
+                  }
+                ],
+                "policy": {
+                  "timeout": "01:00:00",
+                  "concurrency": 1,
+                  "retry": 3
+                },
+                "scheduler": {
+                  "frequency": "[variables('pipelineFrequency')]",
+                  "interval": 1
+                },
+                "name": "read-parameters",
+                "description": "Run proc to read the parameter set corresponding to the current slice"
+              }
+            ],
+            "start": "[variables('pipelineStartDate')]",
+            "end": "9999-09-09T00:00:00Z",
+            "isPaused": true,
+            "pipelineMode": "Scheduled"
+          }
+        },
+        {
+          "type": "dataPipelines",
+          "name": "GenerateForecasts",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureBlob",
+            "AzureSql",
+            "ForecastAzureML",
+            "HistoricalOrdersSql",
+            "ForecastParametersBlob",
+            "ForecastHistoryBlob",
+            "StatisticalForecastBlob"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "description": "Forecast pipeline",
+            "activities": [
+              {
+                "type": "AzureMLBatchExecution",
+                "typeProperties": {
+                  "webServiceOutputs": {
+                    "output1": "ForecastHistoryBlob",
+                    "output2": "StatisticalForecastBlob"
+                  },
+                  "webServiceInputs": {
+                    "input1": "ForecastParametersBlob"
+                  },
+                  "globalParameters": {
+                    "Database server name": "[concat(parameters('sqlServerName'), '.database.windows.net')]",
+                    "Database name": "[parameters('sqlDbName')]",
+                    "User name": "[parameters('sqlServerUser')]",
+                    "Password": "[parameters('sqlServerPasswd')]",
+                    "HistoricalOrders query": "SELECT * FROM [FcastML].[HistoricalOrders]"
+                  }
+                },
+                "inputs": [
+                  {
+                    "name": "HistoricalOrdersSql"
+                  },
+                  {
+                    "name": "ForecastParametersBlob"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "ForecastHistoryBlob"
+                  },
+                  {
+                    "name": "StatisticalForecastBlob"
+                  }
+                ],
+                "policy": {
+                  "timeout": "02:00:00",
+                  "concurrency": 3,
+                  "executionPriorityOrder": "OldestFirst",
+                  "retry": 1
+                },
+                "scheduler": {
+                  "frequency": "[variables('pipelineFrequency')]",
+                  "interval": 1
+                },
+                "name": "generate-forecast",
+                "description": "Call the Azure ML Forecasting Service",
+                "linkedServiceName": "ForecastAzureML"
+              }
+            ],
+            "start": "[variables('pipelineStartDate')]",
+            "end": "9999-09-09T00:00:00Z",
+            "isPaused": true,
+            "pipelineMode": "Scheduled"
+          }
+        },
+        {
+          "type": "dataPipelines",
+          "name": "CopyToSql",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "AzureBlob",
+            "AzureSql",
+            "ForecastHistoryBlob",
+            "StatisticalForecastBlob",
+            "ETL_ForecastHistorySql",
+            "ETL_StatisticalForecastSql",
+            "ForecastHistorySql",
+            "StatisticalForecastSql"
+          ],
+          "apiVersion": "2015-10-01",
+          "properties": {
+            "description": "Copy blob content to SQL Server tables",
+            "activities": [
+              {
+                "type": "Copy",
+                "typeProperties": {
+                  "source": {
+                    "type": "BlobSource",
+                    "skipHeaderLineCount": 1
+                  },
+                  "sink": {
+                    "type": "SqlSink",
+                    "sqlWriterStoredProcedureName": "FcastETL.spWriteForecastHistory",
+                    "storedProcedureParameters": {
+                      "SliceStart": {
+                        "value": "$$Text.Format('{0}',DateTime.Ticks(SliceStart))"
+                      },
+                      "SliceEnd": {
+                        "value": "$$Text.Format('{0}',DateTime.Ticks(SliceEnd))"
+                      }
+                    },
+                    "sqlWriterTableType": "FcastETL.ForecastHistoryType",
+                    "sqlWriterCleanupScript": "$$Text.Format('DELETE FROM FcastETL.ForecastHistory WHERE SliceStart = {0} AND SliceEnd = {1}', DateTime.Ticks(SliceStart), DateTime.Ticks(SliceEnd))",
+                    "writeBatchSize": 1000,
+                    "writeBatchTimeout": "00:45:00"
+                  }
+                },
+                "inputs": [
+                  {
+                    "name": "ForecastHistoryBlob"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "ETL_ForecastHistorySql"
+                  }
+                ],
+                "policy": {
+                  "timeout": "01:00:00",
+                  "concurrency": 1,
+                  "retry": 3
+                },
+                "scheduler": {
+                  "frequency": "[variables('pipelineFrequency')]",
+                  "interval": 1
+                },
+                "name": "write-forecast-history-etl"
+              },
+              {
+                "type": "Copy",
+                "typeProperties": {
+                  "source": {
+                    "type": "BlobSource",
+                    "skipHeaderLineCount": 1
+                  },
+                  "sink": {
+                    "type": "SqlSink",
+                    "sqlWriterStoredProcedureName": "FcastETL.spWriteStatisticalForecast",
+                    "storedProcedureParameters": {
+                      "SliceStart": {
+                        "value": "$$Text.Format('{0}',DateTime.Ticks(SliceStart))"
+                      },
+                      "SliceEnd": {
+                        "value": "$$Text.Format('{0}',DateTime.Ticks(SliceEnd))"
+                      }
+                    },
+                    "sqlWriterTableType": "FcastETL.StatisticalForecastType",
+                    "sqlWriterCleanupScript": "$$Text.Format('DELETE FROM FcastETL.StatisticalForecast WHERE SliceStart = {0} AND SliceEnd = {1}', DateTime.Ticks(SliceStart), DateTime.Ticks(SliceEnd))",
+                    "writeBatchSize": 10000,
+                    "writeBatchTimeout": "00:45:00"
+                  }
+                },
+                "inputs": [
+                  {
+                    "name": "StatisticalForecastBlob"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "ETL_StatisticalForecastSql"
+                  }
+                ],
+                "policy": {
+                  "timeout": "01:00:00",
+                  "concurrency": 1,
+                  "retry": 3
+                },
+                "scheduler": {
+                  "frequency": "[variables('pipelineFrequency')]",
+                  "interval": 1
+                },
+                "name": "write-statistical-forecast-etl"
+              },
+              {
+                "type": "SqlServerStoredProcedure",
+                "typeProperties": {
+                  "storedProcedureName": "FcastETL.spUpdateForecastMLTables",
+                  "storedProcedureParameters": {
+                    "SliceStart": "$$Text.Format('{0}',DateTime.Ticks(SliceStart))",
+                    "SliceEnd": "$$Text.Format('{0}',DateTime.Ticks(SliceEnd))"
+                  }
+                },
+                "inputs": [
+                  {
+                    "name": "ETL_ForecastHistorySql"
+                  },
+                  {
+                    "name": "ETL_StatisticalForecastSql"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "ForecastHistorySql"
+                  },
+                  {
+                    "name": "StatisticalForecastSql"
+                  }
+                ],
+                "policy": {
+                  "timeout": "01:00:00",
+                  "concurrency": 1,
+                  "retry": 3
+                },
+                "scheduler": {
+                  "frequency": "[variables('pipelineFrequency')]",
+                  "interval": 1
+                },
+                "name": "copy-etl-to-final-tables",
+                "description": "Run proc to clean existing duplicates and insert etl table contents"
+              }
+            ],
+            "start": "[variables('pipelineStartDate')]",
+            "end": "9999-09-09T00:00:00Z",
+            "isPaused": true,
+            "pipelineMode": "Scheduled"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "dataFactoryName": {
+      "type": "string",
+      "value": "[variables('dataFactoryName')]"
+    },
+    "dataFactoryUrl": {
+      "type": "string",
+      "value": "[concat('https://portal.azure.com/#resource/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.DataFactory/dataFactories/', variables('dataFactoryName'))]"
+    }
+  }
+}
+

@@ -17,7 +17,7 @@ library(RODBC)
 #
 #####################################################################
 
-# Default Hierarchy 
+# Default time series groups 
 customerList <- c("Contoso","Protoso")
 productCategories <- c("Plastics","Metals")
 destinationList <- c("China","United States","India")
