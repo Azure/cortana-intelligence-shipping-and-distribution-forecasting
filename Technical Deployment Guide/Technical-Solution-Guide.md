@@ -20,7 +20,7 @@ Characteristic of all of these forecasting cases are:
 - There is a history available for the quantity of the item at each time in the past.
 - The volumes of the items differ widely, with possibly a substantial number that have zero volume at times. 
 - The history of items shows both trend and seasonality, possibly at multiple time scales. 
-- The quantities commited or returned are not strongly price sensitive. In other words, the delivery company cannot 
+- The quantities committed or returned are not strongly price sensitive. In other words, the delivery company cannot 
   strongly influence quantities by short-term changes in prices, although there may be other determinants that
   affect volume, such as weather. 
   

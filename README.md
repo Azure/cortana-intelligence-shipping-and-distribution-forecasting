@@ -14,7 +14,7 @@ Use the '*Deploy*' button on this page to deploy an instance of the Solution for
 
 ## Description
 
-The Demand Forecasting for Shipping and Distribution Solution uses historical demand data to forecast demand in future periods across varios customers, products and destinations. For instance, a shipping or delivery company wants to predict the quantities of the different products its customers want delivered at different locations at future times. Similarly a vendor or insurer wants to know the number of products that will be returned due to failures over the course of a year. A company can use these forecasts as input to an allocation tool that optimizes operations, such as delivery vehicles routing, or to plan capacity in the longer term.
+The Demand Forecasting for Shipping and Distribution Solution uses historical demand data to forecast demand in future periods across various customers, products and destinations. For instance, a shipping or delivery company wants to predict the quantities of the different products its customers want delivered at different locations at future times. Similarly a vendor or insurer wants to know the number of products that will be returned due to failures over the course of a year. A company can use these forecasts as input to an allocation tool that optimizes operations, such as delivery vehicles routing, or to plan capacity in the longer term.
 
 Characteristic of all of these forecasting cases are:
 
@@ -22,7 +22,7 @@ Characteristic of all of these forecasting cases are:
 - There is a history available for the quantity of the item at each time in the past.
 - The volumes of the items differ widely, with possibly a substantial number that have zero volume at times. 
 - The history of items shows both trend and seasonality, possibly at multiple time scales. 
-- The quantities commited or returned are not strongly price sensitive. In other words, the delivery company cannot 
+- The quantities committed or returned are not strongly price sensitive. In other words, the delivery company cannot 
   strongly influence quantities by short-term changes in prices, although there may be other determinants that
   affect volume, such as weather. 
   
