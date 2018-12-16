@@ -6,7 +6,7 @@ This folder contains the automated deployment instructions for the deployable Sh
 
 ## Summary
 
-This is an an Azure Solution to reduce the uncertainty in forecasted shipments for organizations that need to plan based on future quantities. This page explains the what the Solution does, and how to install a copy that you can run and modify in your [Azure](https://azure.microsoft.com/en-us/free/?v=17.16&WT.srch=1&WT.mc_id=AID559320__SEM_R2ynpxTK&) subscription. 
+This is an Azure Solution to reduce the uncertainty in forecasted shipments for organizations that need to plan based on future quantities. This page explains the what the Solution does, and how to install a copy that you can run and modify in your [Azure](https://azure.microsoft.com/en-us/free/?v=17.16&WT.srch=1&WT.mc_id=AID559320__SEM_R2ynpxTK&) subscription. 
 
 Azure Solutions in the Cortana Intelligence Gallery are composed of advanced analytics tools for data ingestion, data storage, scheduling and advanced analytics components - all of the essential elements for running a demand forecasting solution that can be integrated with your current production systems. This Solution combines several Azure services.  SQL Server is used for storing forecasts and historical distribution data, Azure Machine Learning (AML) webservice for hosting the R forecasting code, Azure Data Factory to orchestrate the entire workflow, and Power BI to visualize it.
 
